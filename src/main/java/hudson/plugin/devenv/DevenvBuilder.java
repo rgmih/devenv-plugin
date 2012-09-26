@@ -59,15 +59,15 @@ public class DevenvBuilder extends Builder {
 						try {
 							int errors = Integer.parseInt(matcher.group(1));
 							if (errors > 0) {
-								listener.getLogger().println("\n\n!!! ERRORS FOUND: " + errors + " at '" + line + "'\n\n");
+								listener.error("devenv reported " + errors + " build errors: '" + line + "'; terminating");
 								p.destroy();
 								Process killer = Runtime.getRuntime().exec("taskkill /F /IM devenv.exe");
 								int result = killer.waitFor();
-								listener.getLogger().println("taskkill@devenv.exe=" + result);
+								listener.getLogger().println("taskkill /F /IM devenv.exe -> " + result);
 								
 								killer = Runtime.getRuntime().exec("taskkill /F /IM cl.exe");
 								result = killer.waitFor();
-								listener.getLogger().println("taskkill@cl.exe=" + result);
+								listener.getLogger().println("taskkill /F /IM cl.exe -> " + result);
 							}
 						} catch (Exception e) {
 							// skip
@@ -86,21 +86,20 @@ public class DevenvBuilder extends Builder {
 	        cmdWriter.println(cmdInit);
 	        cmdWriter.println(String.format("devenv %s /build %s", solutionPath, buildType));
 	        cmdWriter.close();
+	        
 	        final int exitValue = p.waitFor();
 	        Thread.sleep(5000); // give threads some time to terminate
 	        if (exitValue == 0) {
-	            // System.out.print(stdout.toString());
+	            return true;
 	        } else {
-	            // System.err.print(stderr.toString());
+	            listener.fatalError("build failed; terminating");
+	            return false;
 	        }
-	    }
-	    catch (final IOException e) {
+	    } catch (final IOException e) {
 	        throw new RuntimeException(e);
 	    } catch (final InterruptedException e) {
 	        throw new RuntimeException(e);
 	    }
-		
-		return true;
 	}
 
 
