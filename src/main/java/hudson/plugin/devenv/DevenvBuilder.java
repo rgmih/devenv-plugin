@@ -44,7 +44,6 @@ public class DevenvBuilder extends Builder {
 
 	@Override
 	public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-		listener.getLogger().println("cmd=" + cmdInit);
 		listener.getLogger().println("building solution at " + solutionPath);
 		
 		try

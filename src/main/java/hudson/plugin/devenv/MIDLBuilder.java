@@ -8,7 +8,6 @@ import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -73,16 +72,22 @@ public class MIDLBuilder extends Builder {
 	
 	@Override
 	public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-		listener.getLogger().println("cmd=" + cmdInit);
-		
 		String lines[] = taskList.split("\\r?\\n");
 		
 		ArrayList<Task> tasks = new ArrayList<Task>();
 		for (String line : lines) {
 			ArrayList<String> tokens = parseTaskLine(line);
-			if (tokens.size() < 2) {
+			if (tokens.size() == 0) {
 				listener.fatalError("invalid task format: '%s'; terminating", line);
 				return false;
+			} else if (tokens.size() == 1) {
+				String idl = tokens.get(0);
+				String out = "./";
+				int p = Math.max(idl.lastIndexOf("\\"), idl.lastIndexOf("/"));
+				if (p > 0) {
+					out = idl.substring(0, p + 1);
+				}
+				tasks.add(new Task(idl, out));
 			} else if (tokens.size() == 2) {
 				tasks.add(new Task(tokens.get(0), tokens.get(1)));
 			} else if (tokens.size() > 2) {
