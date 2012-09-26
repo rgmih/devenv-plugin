@@ -3,7 +3,7 @@
     <f:textbox default='' />
   </f:entry>
   <f:entry title="${%Devenv cmd initialize string}" field="cmdInit">
-    <f:textbox default='cmd /k ""C:\Program Files\Microsoft Visual Studio 10.0\VC\vcvarsall.bat"" x86' />
+    <f:textbox default='call "C:\Program Files\Microsoft Visual Studio 8\VC\vcvarsall.bat" x86' />
   </f:entry>
   <f:entry title="${%Devenv midl task list}" field="taskList">
     <f:textarea />
