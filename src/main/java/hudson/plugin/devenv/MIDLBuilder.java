@@ -8,11 +8,14 @@ import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,6 +73,18 @@ public class MIDLBuilder extends Builder {
 		}
 	}
 	
+	private boolean ensurePath(String path) {
+		try {
+			File file = new File(path);
+			file.mkdirs();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	private static final Logger LOGGER = Logger.getLogger(MIDLBuilder.class.getName()); 
+	
 	@Override
 	public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		String lines[] = taskList.split("\\r?\\n");
@@ -110,6 +125,11 @@ public class MIDLBuilder extends Builder {
         }
         cmd.println(cmdInit);
         for (Task task : tasks) {
+        	// LOGGER.log(Level.WARNING, "processing path=" + path + task.out); 
+        	if (!ensurePath(path + task.out)) {
+        		listener.fatalError("unable to mkdir along the path=%s", task.out);
+        		return false;
+        	}
         	cmd.println("(" + task.getCommand() + " || exit) && echo midl: finished; ok");
         }
         cmd.close();
