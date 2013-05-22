@@ -8,4 +8,7 @@
   <f:entry title="${%Devenv build type}" field="buildType">
     <f:textbox default="Release" />
   </f:entry>
+  <f:entry title="${%Devenv action}" field="action">
+    <f:textbox default="build" />
+  </f:entry>
 </j:jelly>

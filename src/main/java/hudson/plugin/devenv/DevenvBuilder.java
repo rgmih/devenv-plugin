@@ -22,12 +22,14 @@ public class DevenvBuilder extends Builder {
 	private final String cmdInit;
 	private final String solutionPath;
 	private final String buildType;
+	private final String action;
 
 	@DataBoundConstructor
-	public DevenvBuilder(String cmdInit, String solutionPath, String buildType) {
+	public DevenvBuilder(String cmdInit, String solutionPath, String buildType, String action) {
 		this.cmdInit = cmdInit;
 		this.solutionPath = solutionPath;
 		this.buildType = buildType;
+		this.action = action;
 	}
 	
 	public String getCmdInit() {
@@ -40,6 +42,10 @@ public class DevenvBuilder extends Builder {
 	
 	public String getBuildType() {
 		return buildType;
+	}
+
+	public String getAction() {
+		return action;
 	}
 
 	@Override
@@ -84,7 +90,7 @@ public class DevenvBuilder extends Builder {
 	        
 	        cmdWriter.println("chcp 65001");
 	        cmdWriter.println(cmdInit);
-	        cmdWriter.println(String.format("devenv %s /build %s", solutionPath, buildType));
+	        cmdWriter.println(String.format("devenv %s /%s %s", solutionPath, action, buildType));
 	        cmdWriter.close();
 	        
 	        final int exitValue = p.waitFor();
